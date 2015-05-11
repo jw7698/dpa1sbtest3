@@ -1,0 +1,11 @@
+[default]
+#host = <%= @inputs_conf['host'] %>
+crcSalt = <SOURCE>
+index = cnim
+disabled = false
+
+<% @inputs_conf['vm'].each do |server,server_data| -%>
+[monitor:///mnt/var/log/rsyslog_custom/*/<%= server_data['log'] %>]
+sourcetype = <%= server_data['sourcetype'] %>
+host_segment=5
+<% end -%>

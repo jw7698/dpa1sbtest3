@@ -1,0 +1,8 @@
+#port 514 for rsyslogd server setup on iptables
+*filter
+:INPUT ACCEPT [1:40]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [1:140]
+-A INPUT -p udp -m state --state NEW -m udp --dport 514 -j ACCEPT
+COMMIT
+#Complete
