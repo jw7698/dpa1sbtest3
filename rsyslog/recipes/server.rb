@@ -21,7 +21,6 @@
 node.set['rsyslog']['server'] = true
 
 include_recipe 'rsyslog::default'
-#include_recipe 'iptables::default'
 
 directory node['rsyslog']['log_dir'] do
   owner    'root'
@@ -42,18 +41,4 @@ file "#{node['rsyslog']['config_prefix']}/rsyslog.d/remote.conf" do
   action   :delete
   notifies :restart, "service[#{node['rsyslog']['service_name']}]"
   only_if  { ::File.exist?("#{node['rsyslog']['config_prefix']}/rsyslog.d/remote.conf") }
-end
-
-#
-# Load firewall rules: port 514 for rsyslog server to accept incoming rsylog client log
-#
-template "/etc/sysconfig/iptables" do
-  source 'iptables.erb'
-  owner 'root'
-  group 'root'
-  mode '0600'
-end
-     
-execute 'service iptables restart' do
-  command "service iptables restart"
 end

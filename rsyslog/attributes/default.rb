@@ -18,20 +18,17 @@
 #
 
 default['rsyslog']['default_log_dir']           = '/var/log'
-default['rsyslog']['log_dir']                   = '/mnt/var/log/rsyslog_custom'
-default['rsyslog']['working_dir']               = '/mnt/var/spool/rsyslog'
+default['rsyslog']['log_dir']                   = '/srv/rsyslog'
+default['rsyslog']['working_dir']               = '/var/spool/rsyslog'
 default['rsyslog']['server']                    = false
 default['rsyslog']['use_relp']                  = false
 default['rsyslog']['relp_port']                 = 20_514
-#default['rsyslog']['protocol']                  = 'tcp'
-default['rsyslog']['protocol']                  = 'udp'
+default['rsyslog']['protocol']                  = 'tcp'
 default['rsyslog']['port']                      = 514
-#default['rsyslog']['server_ip']                 = nil
-default['rsyslog']['server_ip']                 = '108.244.166.220'
+default['rsyslog']['server_ip']                 = nil
 default['rsyslog']['server_search']             = 'role:loghost'
 default['rsyslog']['remote_logs']               = true
-#default['rsyslog']['per_host_dir']              = '%$YEAR%/%$MONTH%/%$DAY%/%HOSTNAME%'
-default['rsyslog']['per_host_dir']              = '%HOSTNAME%/%PROGRAMNAME%.log'
+default['rsyslog']['per_host_dir']              = '%$YEAR%/%$MONTH%/%$DAY%/%HOSTNAME%'
 default['rsyslog']['max_message_size']          = '2k'
 default['rsyslog']['preserve_fqdn']             = 'off'
 default['rsyslog']['high_precision_timestamps'] = false
@@ -55,7 +52,7 @@ default['rsyslog']['additional_directives'] = {}
 # The most likely platform-specific attributes
 default['rsyslog']['service_name']              = 'rsyslog'
 default['rsyslog']['user']                      = 'root'
-default['rsyslog']['group']                     = 'root'
+default['rsyslog']['group']                     = 'adm'
 default['rsyslog']['priv_seperation']           = false
 default['rsyslog']['modules']                   = %w(imuxsock imklog)
 
@@ -63,12 +60,6 @@ default['rsyslog']['modules']                   = %w(imuxsock imklog)
 case node['platform_family']
 when 'rhel', 'fedora'
   default['rsyslog']['working_dir'] = '/var/lib/rsyslog'
-
-  #for haproxy log redirect setup 
-  default['rsyslog']['haproxy_log_redirect'] = {
-    'local2.*' => "#{node['rsyslog']['default_log_dir']}/haproxy/haproxy.log",
-    '&' => '~'
-  }  
   # format { facility => destination }
   default['rsyslog']['default_facility_logs'] = {
     '*.info;mail.none;authpriv.none;cron.none' => "#{node['rsyslog']['default_log_dir']}/messages",
@@ -128,12 +119,3 @@ when 'omnios'
 when 'suse'
   default['rsyslog']['service_name'] = 'syslog'
 end
-
-#attributes for haproxy server input file setup 
-default['rsyslog']['new_resource']['location'] = '/var/log/haproxy/haproxy.log'
-default['rsyslog']['new_resource']['tag'] = 'locus_lb'
-default['rsyslog']['new_resource']['priority'] = 51
-default['rsyslog']['new_resource']['facility'] = 'local0'
-default['rsyslog']['new_resource']['state'] = 'stat-locusHaProxy1-error'
-default['rsyslog']['new_resource']['severity'] = 'error'
-	

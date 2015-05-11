@@ -47,8 +47,7 @@ else
     end
     ipaddress
   end
-  #rsyslog_servers = Array(node['rsyslog']['server_ip']) + Array(results)
-  rsyslog_servers = Array(node['rsyslog']['server_ip']) 
+  rsyslog_servers = Array(node['rsyslog']['server_ip']) + Array(results)
 end
 
 if rsyslog_servers.empty?
@@ -71,22 +70,3 @@ file "#{node['rsyslog']['config_prefix']}/rsyslog.d/server.conf" do
   action   :delete
   notifies :restart, "service[#{node['rsyslog']['service_name']}]"
 end
-
-template "#{node['rsyslog']['config_prefix']}/rsyslog.d/#{node['rsyslog']['new_resource']['priority']}-#{node['rsyslog']['new_resource']['tag']}.conf" do
-	source    "file-input.conf.erb"
-	owner     'root'
-	group     'root'
-	mode      '0644'
-	variables(
-               :servers => rsyslog_servers,  
-	  	         :file_name => node['rsyslog']['new_resource']['location'],  
-	  	         :tag => node['rsyslog']['new_resource']['tag'], 
-	  	         :state_file => node['rsyslog']['new_resource']['state'],
-	  	         :severity => node['rsyslog']['new_resource']['severity'],
-	  	         :facility => node['rsyslog']['new_resource']['facility']
-            )   
-	notifies :restart, "service[#{node['rsyslog']['service_name']}]"
-  only_if { node['hostname'] == "dpa1node2" } 
-end
-
-			
